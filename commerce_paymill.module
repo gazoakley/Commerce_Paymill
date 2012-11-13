@@ -140,13 +140,6 @@ function commerce_paymill_submit_form($payment_method, $pane_values, $checkout_p
     '#required' => TRUE,
   );
 
-  /*
-  $form['credit_card']['pay'] = array(
-    '#type' => 'button',
-    '#value' => 'Make payment',
-  );
-  */
-
   // Load bridge
   $form['credit_card']['#after_build'] = array('commerce_paymill_loadjs');
   return $form;
