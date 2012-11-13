@@ -202,12 +202,11 @@ function commerce_paymill_submit_form_validate($payment_method, $pane_form, $pan
     'description' => 'Test Transaction'
   );
   $apiKey = commerce_paymill_get_key($payment_method['settings']);
-  print "Api key: " . $apiKey . ";";
   $transactionsObject = new Services_Paymill_Transactions($apiKey, PAYMILL_SERVER);
   $transaction = $transactionsObject->create($params);
   
-  print_r($transaction);
-  exit(0);
+  // Need error checking for the transaction here
+  //print_r($transaction);
 }
 
 function commerce_paymill_get_key($settings)
