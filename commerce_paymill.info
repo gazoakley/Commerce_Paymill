@@ -1,0 +1,6 @@
+name = Commerce Paymill
+description = Provides an interface for making payments via Paymill
+package = Commerce (Payment)
+dependencies[] = commerce
+dependencies[] = commerce_payment
+core = 7.x

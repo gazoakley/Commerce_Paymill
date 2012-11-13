@@ -1,0 +1,217 @@
+<?php
+
+define('PAYMILL_BRIDGE', 'https://bridge.paymill.com/');
+define('PAYMILL_SERVER', 'https://api.paymill.de/v2/');
+
+/**
+ * Implements hook_commerce_payment_method_info().
+ */
+function commerce_paymill_commerce_payment_method_info() {
+  $payment_methods = array();
+
+  $payment_methods['commerce_paymill'] = array(
+    'title' => t('Credit/debit card (via Paymill)'),
+    'description' => t('Provides credit card payment during checkout via Paymill.'),
+    'active' => TRUE,
+  );
+
+  return $payment_methods;
+}
+
+/**
+ * Implements hook_js_alter().
+ */
+function commerce_paymill_js_alter(&$javascript)
+{
+  $options = array('type' => 'external', 'scope' => 'footer');
+  drupal_add_js('https://bridge.paymill.com/', $options);
+}
+
+function commerce_paymill_settings_form($settings = NULL) {
+  $form = array();
+
+print_r($settings);
+
+  $settings = (array) $settings + array(
+    'test_private_key' => '',
+    'test_public_key' => '',
+    'live_private_key' => '',
+    'live_public_key' => '',
+    'mode' => 0,
+  );
+
+  $form['test_keys'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Test keys'),
+    '#collapsed' => false,
+  );
+  $form['test_keys']['test_private_key'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Private test key'),
+    '#size' => 40,
+    '#maxlength' => 32,
+    '#default_value' => $settings['test_keys']['test_private_key'],
+    '#required' => TRUE,
+  );
+  $form['test_keys']['test_public_key'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Public test key'),
+    '#size' => 40,
+    '#maxlength' => 32,
+    '#default_value' => $settings['test_keys']['test_public_key'],
+    '#required' => TRUE,
+  );
+  $form['live_keys'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Live keys'),
+    '#collapsed' => false,
+  );
+  $form['live_keys']['live_private_key'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Private live key'),
+    '#size' => 40,
+    '#maxlength' => 32,
+    '#default_value' => $settings['live_keys']['live_private_key'],
+  );
+  $form['live_keys']['live_public_key'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Public test key'),
+    '#size' => 40,
+    '#maxlength' => 32,
+    '#default_value' => $settings['live_keys']['live_public_key'],
+  );
+  $form['mode'] = array(
+    '#type' => 'radios',
+    '#title' => t('Transaction mode'),
+    '#options' => array(
+      'test' => t('Test'),
+      'live' => t('Live'),
+    ),
+    '#default_value' => $settings['mode'],
+   );
+
+  return $form;
+}
+
+/**
+ * Payment method callback: submit form.
+ */
+function commerce_paymill_submit_form($payment_method, $pane_values, $checkout_pane, $order) {
+  module_load_include('inc', 'commerce_payment', 'includes/commerce_payment.credit_card');
+  $fields = array(
+    'owner' => array(),
+    'code' => array(),
+  );
+  $default = array();
+  $form = commerce_payment_credit_card_form($fields, $default);
+
+  // Render form
+  $markup = drupal_render($form['credit_card']);
+  
+  // Create new form
+  $form['credit_card'] = array(
+    '#tree' => TRUE, 
+    '#attached' => array(
+      'css' => array(drupal_get_path('module', 'commerce_payment') . '/theme/commerce_payment.theme.css'),
+      //'js' => array(drupal_get_path('module', 'commerce_paymill') . '/commerce_paymill.js'),
+    ),
+  );
+
+  // Add fields as markup (with name attributes removed for security)
+  $form['credit_card']['fields'] = array(
+    '#type' => 'markup',
+    '#markup' => $markup,
+  );
+
+  // Get order total
+  $commerce_order_total = field_get_items('commerce_order', $order, 'commerce_order_total');
+
+  // Add hidden fields
+  $form['credit_card']['amount'] = array(
+    '#type' => 'hidden',
+    '#value' => $commerce_order_total[0]['amount'],
+  );
+  $form['credit_card']['currency'] = array(
+    '#type' => 'hidden',
+    '#value' => $commerce_order_total[0]['currency_code'],
+  );
+  $form['credit_card']['token'] = array(
+    '#type' => 'hidden',
+    '#required' => TRUE,
+  );
+
+  /*
+  $form['credit_card']['pay'] = array(
+    '#type' => 'button',
+    '#value' => 'Make payment',
+  );
+  */
+
+  // Load bridge
+  $form['credit_card']['#after_build'] = array('commerce_paymill_loadjs');
+  return $form;
+}
+
+function commerce_paymill_loadjs($element)
+{
+  $options = array('type' => 'external', 'scope' => 'footer');
+  drupal_add_js('https://bridge.paymill.com/', $options);
+  drupal_add_js("var PAYMILL_PUBLIC_KEY = '69622504766874409cd428f3e7a10843';", 'inline');
+  drupal_add_js(drupal_get_path('module', 'commerce_paymill') . '/commerce_paymill.js');
+  //drupal_add_js('http://www.olavintage.com/sites/all/modules/commerce_paymill/commerce_paymill.js', 'external');
+  return $element;
+}
+
+/**
+ * Payment method callback: submit form validation.
+ */
+function commerce_paymill_submit_form_validate($payment_method, $pane_form, $pane_values, $order, $form_parents = array()) {
+  // Validate the credit card fields.
+  //module_load_include('inc', 'commerce_payment', 'includes/commerce_payment.credit_card');
+  //$settings = array(
+  //  'form_parents' => array_merge($form_parents, array('credit_card')),
+  //);
+
+  //if (!commerce_payment_credit_card_validate($pane_values['credit_card'], $settings)) {
+  //  return FALSE;
+  //}
+  if (empty($pane_values['credit_card']['token']))
+  {
+    form_set_error('', t('No Paymill token receieved. Your card has not been charged. Please enabled JavaScript to complete your payment.'));
+    return FALSE;
+  }
+}
+
+/**
+ * Payment method callback: submit form submission.
+ */
+function commerce_paymill_submit_form_submit($payment_method, $pane_form, $pane_values, $order, $charge) {
+  $order->data['commerce_paymill'] = $pane_values;
+
+  commerce_paymill_transaction($payment_method, $order, $charge);
+}
+
+/**
+ * Creates an example payment transaction for the specified charge amount.
+ *
+ * @param $payment_method
+ *   The payment method instance object used to charge this payment.
+ * @param $order
+ *   The order object the payment applies to.
+ * @param $charge
+ *   An array indicating the amount and currency code to charge.
+ * @param $name
+ *   The name entered on the submission form.
+ */
+function commerce_paymill_transaction($payment_method, $order, $charge) {
+  $transaction = commerce_payment_transaction_new('commerce_paymill', $order->order_id);
+  $transaction->instance_id = $payment_method['instance_id'];
+  $transaction->amount = $charge['amount'];
+  $transaction->currency_code = $charge['currency_code'];
+  $transaction->status = COMMERCE_PAYMENT_STATUS_SUCCESS;
+  $transaction->message = 'Name: @name';
+  $transaction->message_variables = array('@name' => 'Kickstart example payment');
+
+  commerce_payment_transaction_save($transaction);
+  return $transaction;
+}
