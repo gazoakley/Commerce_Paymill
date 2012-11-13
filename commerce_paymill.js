@@ -1,8 +1,4 @@
 jQuery(document).ready(function($) {
-  $('#edit-commerce-payment-payment-details-credit-card-pay').bind('click', function() {
-    event.preventDefault();
-    alert('Someone clicked pay!');
-  });
   $('#edit-continue').bind('click', function() {
     event.preventDefault();
     getToken($);
@@ -27,7 +23,6 @@ function getToken($) {
 //    currency: currency1,
   },
   paymillResponseHandler);
-  //alert('Getting token');
 }
 
 function paymillResponseHandler(error,result) {
