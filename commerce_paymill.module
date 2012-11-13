@@ -180,6 +180,39 @@ function commerce_paymill_submit_form_validate($payment_method, $pane_form, $pan
     form_set_error('', t('No Paymill token receieved. Your card has not been charged. Please enabled JavaScript to complete your payment.'));
     return FALSE;
   }
+  
+  ini_set('display_errors',1); 
+  error_reporting(E_ALL);
+  
+  // Include Paymill libraries
+  $paymill_path = realpath(dirname(__FILE__) . "/paymill/lib");
+  set_include_path(implode(PATH_SEPERATOR, array($paymill_path, get_include_path())));
+  
+  require_once 'paymill/lib/Services/Paymill/Transactions.php';
+  require_once 'paymill/lib/Services/Paymill/Payments.php';
+  
+  // Get order total
+  $commerce_order_total = field_get_items('commerce_order', $order, 'commerce_order_total');
+  
+  // Attempt transaction with Paymill
+  $params = array(
+    'amount' => $commerce_order_total[0]['amount'],
+    'currency' => $commerce_order_total[0]['currency_code'],
+    'token' => $pane_values['credit_card']['token'],
+    'description' => 'Test Transaction'
+  );
+  $apiKey = commerce_paymill_get_key($payment_method['settings']);
+  print "Api key: " . $apiKey . ";";
+  $transactionsObject = new Services_Paymill_Transactions($apiKey, PAYMILL_SERVER);
+  $transaction = $transactionsObject->create($params);
+  
+  print_r($transaction);
+  exit(0);
+}
+
+function commerce_paymill_get_key($settings)
+{
+  return $settings['test_keys']['test_private_key'];
 }
 
 /**
