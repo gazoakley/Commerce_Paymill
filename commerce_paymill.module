@@ -151,7 +151,6 @@ function commerce_paymill_loadjs($element)
   drupal_add_js(PAYMILL_BRIDGE, $options);
   drupal_add_js("var PAYMILL_PUBLIC_KEY = '69622504766874409cd428f3e7a10843';", 'inline');
   drupal_add_js(drupal_get_path('module', 'commerce_paymill') . '/commerce_paymill.js');
-  //drupal_add_js('http://www.olavintage.com/sites/all/modules/commerce_paymill/commerce_paymill.js', 'external');
   return $element;
 }
 
