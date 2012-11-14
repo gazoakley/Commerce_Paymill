@@ -195,7 +195,7 @@ function commerce_paymill_submit_form_validate($payment_method, $pane_form, $pan
 }
 
 /**
- * Get Paymill key from settings
+ * Get Paymill key from settings.
  */
 function commerce_paymill_get_key($settings, $key = 'private') {
   $mode = $settings['mode'];
@@ -215,11 +215,11 @@ function commerce_paymill_submit_form_submit($payment_method, $pane_form, $pane_
 /**
  * Creates an example payment transaction for the specified charge amount.
  *
- * @param $payment_method
+ * @param payment_method $payment_method
  *   The payment method instance object used to charge this payment.
- * @param $order
+ * @param order $order
  *   The order object the payment applies to.
- * @param $charge
+ * @param charge $charge
  *   An array indicating the amount and currency code to charge.
  */
 function commerce_paymill_transaction($payment_method, $order, $charge) {
