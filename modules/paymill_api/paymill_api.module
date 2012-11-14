@@ -11,7 +11,7 @@
 function paymill_api_libraries_info() {
   $libraries = array();
 
-  $libraries['paymill'] = new array(
+  $libraries['paymill'] = array(
     'name' => 'Paymill',
 	'vendor' => 'http://www.paymill.com/',
 	'download_url' => 'https://github.com/Paymill/Paymill-PHP/archive/master.zip',
