@@ -1,0 +1,34 @@
+<?php
+
+/**
+ * @file
+ * Provides a Libraries module based loader for the Paymill API.
+ */
+
+/**
+ * Implementation of hook_libraries_info.
+ */
+function paymill_api_libraries_info() {
+  $libraries = array();
+
+  $libraries['paymill'] = new array(
+    'name' => 'Paymill',
+	'vendor' => 'http://www.paymill.com/',
+	'download_url' => 'https://github.com/Paymill/Paymill-PHP/archive/master.zip',
+	'path' => 'Paymill-PHP-master/lib/Services/Paymill',
+	'files' => array(
+	  'php => array(
+	    'Clients.php',
+	    'Coupons.php',
+	    'Exception.php',
+	    'Offers.php',
+	    'Payments.php',
+	    'Refunds.php',
+	    'Subscriptions.php',
+	    'Transactions.php',
+	  );
+	);
+  );
+
+  return $library;
+}
