@@ -26,8 +26,8 @@ function paymill_api_libraries_info() {
 	    'Refunds.php',
 	    'Subscriptions.php',
 	    'Transactions.php',
-	  );
-	);
+	  ),
+	),
   );
 
   return $library;
