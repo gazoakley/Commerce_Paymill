@@ -56,7 +56,7 @@ function commerce_paymill_settings_form($settings = NULL) {
     '#default_value' => $settings[PAYMILL_MODE_TEST]['public_key'],
     '#required' => TRUE,
   );
-  
+
   $form[PAYMILL_MODE_LIVE] = array(
     '#type' => 'fieldset',
     '#title' => t('Live keys'),
@@ -76,7 +76,7 @@ function commerce_paymill_settings_form($settings = NULL) {
     '#maxlength' => 32,
     '#default_value' => $settings[PAYMILL_MODE_LIVE]['public_key'],
   );
-  
+
   $form['mode'] = array(
     '#type' => 'radios',
     '#title' => t('Transaction mode'),
@@ -96,7 +96,7 @@ function commerce_paymill_settings_form($settings = NULL) {
 function commerce_paymill_submit_form($payment_method, $pane_values, $checkout_pane, $order) {
   global $_commerce_paymill_settings;
   $_commerce_paymill_settings = $payment_method['settings'];
-  
+
   module_load_include('inc', 'commerce_payment', 'includes/commerce_payment.credit_card');
   $fields = array(
     'owner' => array(),
@@ -107,10 +107,10 @@ function commerce_paymill_submit_form($payment_method, $pane_values, $checkout_p
 
   // Render form
   $markup = drupal_render($form['credit_card']);
-  
+
   // Create new form
   $form['credit_card'] = array(
-    '#tree' => TRUE, 
+    '#tree' => TRUE,
     '#attached' => array(
       'css' => array(drupal_get_path('module', 'commerce_payment') . '/theme/commerce_payment.theme.css'),
     ),
@@ -144,6 +144,9 @@ function commerce_paymill_submit_form($payment_method, $pane_values, $checkout_p
   return $form;
 }
 
+/**
+ * Load in javascript for payment form
+ */
 function commerce_paymill_loadjs($element) {
   global $_commerce_paymill_settings;
   $key = commerce_paymill_get_key($_commerce_paymill_settings, 'public');
@@ -162,28 +165,28 @@ function commerce_paymill_submit_form_validate($payment_method, $pane_form, $pan
     form_set_error('', t('No Paymill token receieved. Your card has not been charged. Please enabled JavaScript to complete your payment.'));
     return FALSE;
   }
-  
+
   // Include Paymill libraries
   $paymill_path = realpath(dirname(__FILE__) . "/paymill/lib");
   set_include_path(implode(PATH_SEPERATOR, array($paymill_path, get_include_path())));
-  
+
   require_once 'paymill/lib/Services/Paymill/Transactions.php';
   require_once 'paymill/lib/Services/Paymill/Payments.php';
-  
+
   // Get order total
   $commerce_order_total = field_get_items('commerce_order', $order, 'commerce_order_total');
-  
+
   // Attempt transaction with Paymill
   $params = array(
     'amount' => $commerce_order_total[0]['amount'],
     'currency' => $commerce_order_total[0]['currency_code'],
     'token' => $pane_values['credit_card']['token'],
-    'description' => 'Test Transaction'
+    'description' => 'Test Transaction',
   );
   $api_key = commerce_paymill_get_key($payment_method['settings']);
   $transaction_service = new Services_Paymill_Transactions($api_key, PAYMILL_SERVER);
   $transaction = $transaction_service->create($params);
-  
+
   // Need error checking for the transaction here!
   if (isset($transaction['Error'])) {
     form_set_error('', $transaction['Error']);
@@ -191,6 +194,9 @@ function commerce_paymill_submit_form_validate($payment_method, $pane_form, $pan
   }
 }
 
+/**
+ * Get Paymill key from settings
+ */
 function commerce_paymill_get_key($settings, $key = 'private') {
   $mode = $settings['mode'];
   $key = $settings[$mode][$key . '_key'];
