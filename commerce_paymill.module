@@ -178,6 +178,11 @@ function commerce_paymill_submit_form_validate($payment_method, $pane_form, $pan
   $transaction = $transaction_service->create($params);
   
   // Need error checking for the transaction here!
+  if (isset($transaction['Error']))
+  {
+    form_set_error('', $transaction['Error']);
+    return FALSE;
+  }
 }
 
 function commerce_paymill_get_key($settings, $key = 'private')
