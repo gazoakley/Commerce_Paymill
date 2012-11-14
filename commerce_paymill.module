@@ -21,16 +21,13 @@ function commerce_paymill_commerce_payment_method_info() {
 /**
  * Implements hook_js_alter().
  */
-function commerce_paymill_js_alter(&$javascript)
-{
+function commerce_paymill_js_alter(&$javascript) {
   $options = array('type' => 'external', 'scope' => 'footer');
   drupal_add_js('https://bridge.paymill.com/', $options);
 }
 
 function commerce_paymill_settings_form($settings = NULL) {
   $form = array();
-
-print_r($settings);
 
   $settings = (array) $settings + array(
     'test_private_key' => '',
@@ -43,7 +40,7 @@ print_r($settings);
   $form['test_keys'] = array(
     '#type' => 'fieldset',
     '#title' => t('Test keys'),
-    '#collapsed' => false,
+    '#collapsed' => FALSE,
   );
   $form['test_keys']['test_private_key'] = array(
     '#type' => 'textfield',
@@ -64,7 +61,7 @@ print_r($settings);
   $form['live_keys'] = array(
     '#type' => 'fieldset',
     '#title' => t('Live keys'),
-    '#collapsed' => false,
+    '#collapsed' => FALSE,
   );
   $form['live_keys']['live_private_key'] = array(
     '#type' => 'textfield',
@@ -88,7 +85,7 @@ print_r($settings);
       'live' => t('Live'),
     ),
     '#default_value' => $settings['mode'],
-   );
+  );
 
   return $form;
 }
@@ -113,7 +110,6 @@ function commerce_paymill_submit_form($payment_method, $pane_values, $checkout_p
     '#tree' => TRUE, 
     '#attached' => array(
       'css' => array(drupal_get_path('module', 'commerce_payment') . '/theme/commerce_payment.theme.css'),
-      //'js' => array(drupal_get_path('module', 'commerce_paymill') . '/commerce_paymill.js'),
     ),
   );
 
@@ -158,8 +154,7 @@ function commerce_paymill_loadjs($element)
  * Payment method callback: submit form validation.
  */
 function commerce_paymill_submit_form_validate($payment_method, $pane_form, $pane_values, $order, $form_parents = array()) {
-  if (empty($pane_values['credit_card']['token']))
-  {
+  if (empty($pane_values['credit_card']['token'])) {
     form_set_error('', t('No Paymill token receieved. Your card has not been charged. Please enabled JavaScript to complete your payment.'));
     return FALSE;
   }
@@ -181,12 +176,11 @@ function commerce_paymill_submit_form_validate($payment_method, $pane_form, $pan
     'token' => $pane_values['credit_card']['token'],
     'description' => 'Test Transaction'
   );
-  $apiKey = commerce_paymill_get_key($payment_method['settings']);
-  $transactionsObject = new Services_Paymill_Transactions($apiKey, PAYMILL_SERVER);
-  $transaction = $transactionsObject->create($params);
+  $api_key = commerce_paymill_get_key($payment_method['settings']);
+  $transaction_service = new Services_Paymill_Transactions($api_key, PAYMILL_SERVER);
+  $transaction = $transaction_service->create($params);
   
-  // Need error checking for the transaction here
-  //print_r($transaction);
+  // Need error checking for the transaction here!
 }
 
 function commerce_paymill_get_key($settings)
