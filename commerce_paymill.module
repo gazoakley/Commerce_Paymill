@@ -1,5 +1,10 @@
 <?php
 
+/**
+ * @file
+ * Provides a basic payment module implementation for Paymill
+ */
+
 define('PAYMILL_BRIDGE', 'https://bridge.paymill.com/');
 define('PAYMILL_SERVER', 'https://api.paymill.de/v2/');
 define('PAYMILL_MODE_TEST', 'test');
@@ -20,6 +25,9 @@ function commerce_paymill_commerce_payment_method_info() {
   return $payment_methods;
 }
 
+/**
+ * Implements hook_settings_form().
+ */
 function commerce_paymill_settings_form($settings = NULL) {
   $form = array();
 
@@ -86,8 +94,8 @@ function commerce_paymill_settings_form($settings = NULL) {
  * Payment method callback: submit form.
  */
 function commerce_paymill_submit_form($payment_method, $pane_values, $checkout_pane, $order) {
-  global $paymill_settings;
-  $paymill_settings = $payment_method['settings'];
+  global $_commerce_paymill_settings;
+  $_commerce_paymill_settings = $payment_method['settings'];
   
   module_load_include('inc', 'commerce_payment', 'includes/commerce_payment.credit_card');
   $fields = array(
@@ -136,10 +144,9 @@ function commerce_paymill_submit_form($payment_method, $pane_values, $checkout_p
   return $form;
 }
 
-function commerce_paymill_loadjs($element)
-{
-  global $paymill_settings;
-  $key = commerce_paymill_get_key($paymill_settings, 'public');
+function commerce_paymill_loadjs($element) {
+  global $_commerce_paymill_settings;
+  $key = commerce_paymill_get_key($_commerce_paymill_settings, 'public');
   $options = array('type' => 'external', 'scope' => 'footer');
   drupal_add_js(PAYMILL_BRIDGE, $options);
   drupal_add_js("var PAYMILL_PUBLIC_KEY = '$key';", 'inline');
@@ -178,15 +185,13 @@ function commerce_paymill_submit_form_validate($payment_method, $pane_form, $pan
   $transaction = $transaction_service->create($params);
   
   // Need error checking for the transaction here!
-  if (isset($transaction['Error']))
-  {
+  if (isset($transaction['Error'])) {
     form_set_error('', $transaction['Error']);
     return FALSE;
   }
 }
 
-function commerce_paymill_get_key($settings, $key = 'private')
-{
+function commerce_paymill_get_key($settings, $key = 'private') {
   $mode = $settings['mode'];
   $key = $settings[$mode][$key . '_key'];
   return $key;
