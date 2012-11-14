@@ -105,10 +105,10 @@ function commerce_paymill_submit_form($payment_method, $pane_values, $checkout_p
   $default = array();
   $form = commerce_payment_credit_card_form($fields, $default);
 
-  // Render form
+  // Render default form - will be inserted again using markup.
   $markup = drupal_render($form['credit_card']);
 
-  // Create new form
+  // Create new form with no existing fields.
   $form['credit_card'] = array(
     '#tree' => TRUE,
     '#attached' => array(
@@ -116,16 +116,16 @@ function commerce_paymill_submit_form($payment_method, $pane_values, $checkout_p
     ),
   );
 
-  // Add fields as markup (with name attributes removed for security)
+  // Add fields as markup (with name attributes removed for security).
   $form['credit_card']['fields'] = array(
     '#type' => 'markup',
     '#markup' => $markup,
   );
 
-  // Get order total
+  // Get order total for order.
   $commerce_order_total = field_get_items('commerce_order', $order, 'commerce_order_total');
 
-  // Add hidden fields
+  // Add hidden fields for amount/currency/Paymill token.
   $form['credit_card']['amount'] = array(
     '#type' => 'hidden',
     '#value' => $commerce_order_total[0]['amount'],
@@ -139,13 +139,13 @@ function commerce_paymill_submit_form($payment_method, $pane_values, $checkout_p
     '#required' => TRUE,
   );
 
-  // Load bridge
+  // Load Paymill bridge.
   $form['credit_card']['#after_build'] = array('commerce_paymill_loadjs');
   return $form;
 }
 
 /**
- * Load in javascript for payment form
+ * Load in javascript for payment form.
  */
 function commerce_paymill_loadjs($element) {
   global $_commerce_paymill_settings;
@@ -166,17 +166,17 @@ function commerce_paymill_submit_form_validate($payment_method, $pane_form, $pan
     return FALSE;
   }
 
-  // Include Paymill libraries
+  // Include Paymill libraries.
   $paymill_path = realpath(dirname(__FILE__) . "/paymill/lib");
   set_include_path(implode(PATH_SEPERATOR, array($paymill_path, get_include_path())));
 
   require_once 'paymill/lib/Services/Paymill/Transactions.php';
   require_once 'paymill/lib/Services/Paymill/Payments.php';
 
-  // Get order total
+  // Get order total for order.
   $commerce_order_total = field_get_items('commerce_order', $order, 'commerce_order_total');
 
-  // Attempt transaction with Paymill
+  // Attempt transaction with Paymill.
   $params = array(
     'amount' => $commerce_order_total[0]['amount'],
     'currency' => $commerce_order_total[0]['currency_code'],
@@ -187,7 +187,7 @@ function commerce_paymill_submit_form_validate($payment_method, $pane_form, $pan
   $transaction_service = new Services_Paymill_Transactions($api_key, PAYMILL_SERVER);
   $transaction = $transaction_service->create($params);
 
-  // Need error checking for the transaction here!
+  // Need error checking for the transaction here!.
   if (isset($transaction['Error'])) {
     form_set_error('', $transaction['Error']);
     return FALSE;
@@ -221,8 +221,6 @@ function commerce_paymill_submit_form_submit($payment_method, $pane_form, $pane_
  *   The order object the payment applies to.
  * @param $charge
  *   An array indicating the amount and currency code to charge.
- * @param $name
- *   The name entered on the submission form.
  */
 function commerce_paymill_transaction($payment_method, $order, $charge) {
   $transaction = commerce_payment_transaction_new('commerce_paymill', $order->order_id);
