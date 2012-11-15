@@ -91,10 +91,9 @@ function commerce_paymill_settings_form($settings = NULL) {
 }
 
 /**
- * Implement hook_menu.
+ * Implements hook_menu().
  */
-function commerce_paymill_menu()
-{
+function commerce_paymill_menu() {
   $items = array();
 
   $items['admin/settings/commerce-paymill'] = array(
@@ -111,10 +110,8 @@ function commerce_paymill_menu()
 /**
  * Redirect user to configuration page.
  */
-function commerce_paymill_configure()
-{
+function commerce_paymill_configure() {
   // Look for Paymill usage.
-  
 
   // Redirect user to configuration page.
   drupal_goto();
