@@ -91,6 +91,36 @@ function commerce_paymill_settings_form($settings = NULL) {
 }
 
 /**
+ * Implement hook_menu.
+ */
+function commerce_paymill_menu()
+{
+  $items = array();
+
+  $items['admin/commerce_paymill'] = array(
+    'title' => 'Commerce Paymill Configuration',
+    'description' => 'Configure the Commerce Paymill module',
+    'page callback' => 'commerce_paymill_configure',
+    'access arguments' => array('administer payment methods'),
+    'type' => MENU_CALLBACK,
+  );
+
+  return $items;
+}
+
+/**
+ * Redirect user to configuration page.
+ */
+function commerce_paymill_configure()
+{
+  // Look for Paymill usage.
+  
+
+  // Redirect user to configuration page.
+  drupal_goto();
+}
+
+/**
  * Payment method callback: submit form.
  */
 function commerce_paymill_submit_form($payment_method, $pane_values, $checkout_pane, $order) {

@@ -5,3 +5,4 @@ dependencies[] = commerce
 dependencies[] = commerce_payment
 dependencies[] = paymill_api
 core = 7.x
+configure = admin/commerce_paymill
