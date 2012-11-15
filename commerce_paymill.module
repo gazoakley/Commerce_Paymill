@@ -32,14 +32,14 @@ function commerce_paymill_settings_form($settings = NULL) {
   $form = array();
 
   $settings = (array) $settings + array(
-	'test' => array(
-	  'private_key' => '',
-	  'public_key' => '',
-	),
+    'test' => array(
+      'private_key' => '',
+      'public_key' => '',
+    ),
     'live' => array(
-	  'private_key' => '',
-	  'public_key' => '',
-	),
+      'private_key' => '',
+      'public_key' => '',
+    ),
     'mode' => PAYMILL_MODE_TEST,
   );
 
