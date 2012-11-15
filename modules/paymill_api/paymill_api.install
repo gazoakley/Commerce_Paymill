@@ -9,6 +9,7 @@
  * Implements hook_requirements().
  */
 function paymill_api_requirements($phase) {
+  $t = get_t();
   $requirements = array();
 
   if ($phase == 'runtime') {
@@ -20,12 +21,12 @@ function paymill_api_requirements($phase) {
       $severity = REQUIREMENT_OK;
     }
     else {
-      $value = t('Not installed');
+      $value = $t('Not installed');
       $description = $library['error message'];
       $severity = REQUIREMENT_ERROR;
     }
     $requirements['paymill_library'] = array(
-      'title' => t('Paymill library'),
+      'title' => $t('Paymill library'),
       'value' => $value,
       'description' => $description,
       'severity' => $severity,
@@ -34,8 +35,8 @@ function paymill_api_requirements($phase) {
     // Check cURL is installed.
     $curl = function_exists('curl_init');
     $requirements['paymill_curl'] = array(
-      'title' => t('Paymill cURL support'),
-      'value' => $curl ? t('cURL extension enabled') : t('cURL extension is not installed/enabled'),
+      'title' => $t('Paymill cURL support'),
+      'value' => $curl ? $t('cURL extension enabled') : $t('cURL extension is not installed/enabled'),
       'description' => NULL,
       'severity' => $curl ? REQUIREMENT_OK : REQUIREMENT_ERROR,
     );
@@ -43,8 +44,8 @@ function paymill_api_requirements($phase) {
     // Check JSON is installed.
     $curl = function_exists('json_decode');
     $requirements['paymill_json'] = array(
-      'title' => t('Paymill JSON support'),
-      'value' => $curl ? t('JSON extension enabled') : t('JSON extension is not installed/enabled'),
+      'title' => $t('Paymill JSON support'),
+      'value' => $curl ? $t('JSON extension enabled') : $t('JSON extension is not installed/enabled'),
       'description' => NULL,
       'severity' => $curl ? REQUIREMENT_OK : REQUIREMENT_ERROR,
     );
