@@ -13,22 +13,27 @@ function paymill_api_libraries_info() {
 
   $libraries['paymill'] = array(
     'name' => 'Paymill',
-	'vendor' => 'http://www.paymill.com/',
-	'download_url' => 'https://github.com/Paymill/Paymill-PHP/archive/master.zip',
-	'path' => 'Paymill-PHP-master/lib/Services/Paymill',
-	'files' => array(
-	  'php => array(
-	    'Clients.php',
-	    'Coupons.php',
-	    'Exception.php',
-	    'Offers.php',
-	    'Payments.php',
-	    'Refunds.php',
-	    'Subscriptions.php',
-	    'Transactions.php',
-	  ),
+    'vendor' => 'http://www.paymill.com/',
+    'download_url' => 'https://github.com/Paymill/Paymill-PHP/archive/master.zip',
+    'path' => 'lib/Services/Paymill',
+	'version arguments' => array(
+      'file' => 'lib/Services/Paymill/Apiclient/Curl.php',
+      'pattern' => '@Paymill-php/([0-9\.]+)@',
+      'lines' => 40,
 	),
+    'files' => array(
+      'php' => array(
+        'Clients.php',
+        'Coupons.php',
+        'Exception.php',
+        'Offers.php',
+        'Payments.php',
+        'Refunds.php',
+        'Subscriptions.php',
+        'Transactions.php',
+      ),
+    ),
   );
 
-  return $library;
+  return $libraries;
 }
