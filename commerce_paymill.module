@@ -138,7 +138,11 @@ function commerce_paymill_submit_form($payment_method, $pane_values, $checkout_p
   $default = array();
   $form = commerce_payment_credit_card_form($fields, $default);
 
-  // Render default form - will be inserted again using markup.
+  /**
+   * Render default form - will be inserted again using markup. (This is
+   * rendered now to avoid including the name attribute for input fields, which
+   * would in turn allow credit card details to be sent back)
+   */ 
   $markup = drupal_render($form['credit_card']);
 
   // Create new form with no existing fields.
@@ -182,12 +186,17 @@ function commerce_paymill_submit_form($payment_method, $pane_values, $checkout_p
  */
 function commerce_paymill_loadjs($element) {
   global $_commerce_paymill_settings;
+
+  // Load Paymill bridge
   $key = commerce_paymill_get_key($_commerce_paymill_settings, 'public');
   $options = array('type' => 'external', 'scope' => 'footer');
   drupal_add_js(PAYMILL_BRIDGE, $options);
-  $inline = "var PAYMILL_PUBLIC_KEY = '$key';\n";
-  $inline .= sprintf("var PAYMILL_3DS_BUTTON_LABEL = '%s';", t('Cancel'));
+
+  // Configure Paymill
+  $inline = sprintf("var PAYMILL_PUBLIC_KEY = '%s';\nvar PAYMILL_3DS_BUTTON_LABEL = '%s';", $key, t('Cancel'));
   drupal_add_js($inline, 'inline');
+
+  // Load Commerce Paymill JS library
   drupal_add_js(drupal_get_path('module', 'commerce_paymill') . '/commerce_paymill.js');
   return $element;
 }
