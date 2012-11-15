@@ -28,14 +28,17 @@ INSTALLATION
 2. Copy the Commerce_Paymill/ directory to your sites/SITENAME/modules
    directory.
 
-3. Download the Paymill PHP libraries from GitHub:
-   https://api.github.com/repos/Paymill/Paymill-v2-PHP/zipball/
-   3c6f2fb1ddae7ad0eed6dff9a6bee051bb894f5f
+3. Create a libraries directory under sites/SITENAME if it does not exist.
 
-4. Copy the Paymill-v2-PHP directory to the sites/SITENAME/libraries
-   directory.
+4. Create a paymill directory under sites/SITENAME/libraries.
 
-3. Enable the module and configure admin/settings/commerce-paymill.
+5. Download the Paymill PHP libraries from GitHub:
+   https://github.com/Paymill/Paymill-PHP/archive/master.zip
+
+6. Copy the contents of the zip file into sites/SITENAME/libraries/paymill
+   README.md should exist in this directory
+
+7. Enable the module and configure admin/settings/commerce-paymill.
 
 
 POSSIBLE FUTURE FEATURES

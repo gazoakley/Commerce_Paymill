@@ -97,7 +97,7 @@ function commerce_paymill_menu()
 {
   $items = array();
 
-  $items['admin/commerce_paymill'] = array(
+  $items['admin/settings/commerce-paymill'] = array(
     'title' => 'Commerce Paymill Configuration',
     'description' => 'Configure the Commerce Paymill module',
     'page callback' => 'commerce_paymill_configure',
