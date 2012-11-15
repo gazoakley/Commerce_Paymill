@@ -167,11 +167,7 @@ function commerce_paymill_submit_form_validate($payment_method, $pane_form, $pan
   }
 
   // Include Paymill libraries.
-  $paymill_path = realpath(dirname(__FILE__) . "/paymill/lib");
-  set_include_path(implode(PATH_SEPERATOR, array($paymill_path, get_include_path())));
-
-  require_once 'paymill/lib/Services/Paymill/Transactions.php';
-  require_once 'paymill/lib/Services/Paymill/Payments.php';
+  libraries_load('paymill')
 
   // Get order total for order.
   $commerce_order_total = field_get_items('commerce_order', $order, 'commerce_order_total');
