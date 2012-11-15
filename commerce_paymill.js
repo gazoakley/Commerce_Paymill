@@ -13,14 +13,15 @@ function getToken($) {
   var cvc1 = $('#payment-details input:eq(2)').val();
   var amount1 = $('input[name="commerce_payment[payment_details][credit_card][amount]"]').val();
   var currency1 = $('input[name="commerce_payment[payment_details][credit_card][currency]"]').val();
+  paymill.config('3ds_cancel_label', PAYMILL_3DS_BUTTON_LABEL);
   paymill.createToken({
     number: number1,
     exp_month: expMonth,
     exp_year: expYear,
     cvc: cvc1,
     cardholdername: cardHolderName,
-//    amount: amount1,
-//    currency: currency1,
+    amount: amount1,
+    currency: currency1,
   },
   paymillResponseHandler);
 }
@@ -29,7 +30,6 @@ function paymillResponseHandler(error,result) {
   if (error) {
     alert(error.apierror);
   } else {
-    alert(result.token);
     jQuery('input[name="commerce_payment[payment_details][credit_card][token]"]').val(result.token);
     jQuery('#commerce-checkout-form-review').get(0).submit();
   }
