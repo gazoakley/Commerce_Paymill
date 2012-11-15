@@ -32,6 +32,14 @@ function commerce_paymill_settings_form($settings = NULL) {
   $form = array();
 
   $settings = (array) $settings + array(
+	'test' => array(
+	  'private_key' => '',
+	  'public_key' => '',
+	),
+    'live' => array(
+	  'private_key' => '',
+	  'public_key' => '',
+	),
     'mode' => PAYMILL_MODE_TEST,
   );
 
@@ -40,7 +48,7 @@ function commerce_paymill_settings_form($settings = NULL) {
     '#title' => t('Test keys'),
     '#collapsed' => FALSE,
   );
-  $form[PAYMILL_MODE_TEST]['test_private_key'] = array(
+  $form[PAYMILL_MODE_TEST]['private_key'] = array(
     '#type' => 'textfield',
     '#title' => t('Private test key'),
     '#size' => 40,
@@ -48,7 +56,7 @@ function commerce_paymill_settings_form($settings = NULL) {
     '#default_value' => $settings[PAYMILL_MODE_TEST]['private_key'],
     '#required' => TRUE,
   );
-  $form[PAYMILL_MODE_TEST]['test_public_key'] = array(
+  $form[PAYMILL_MODE_TEST]['public_key'] = array(
     '#type' => 'textfield',
     '#title' => t('Public test key'),
     '#size' => 40,
@@ -111,10 +119,8 @@ function commerce_paymill_menu() {
  * Redirect user to configuration page.
  */
 function commerce_paymill_configure() {
-  // Look for Paymill usage.
-
   // Redirect user to configuration page.
-  drupal_goto();
+  drupal_goto('admin/commerce/config/payment-methods/manage/commerce_payment_commerce_paymill/edit/3');
 }
 
 /**
