@@ -161,7 +161,7 @@ function commerce_paymill_submit_form($payment_method, $pane_values, $checkout_p
   // Add hidden fields for amount/currency/Paymill token.
   $form['credit_card']['amount'] = array(
     '#type' => 'hidden',
-    '#value' => $commerce_order_total[0]['amount'],
+    '#value' => sprintf('%.2f', $commerce_order_total[0]['amount'] / 100),
   );
   $form['credit_card']['currency'] = array(
     '#type' => 'hidden',
@@ -185,7 +185,9 @@ function commerce_paymill_loadjs($element) {
   $key = commerce_paymill_get_key($_commerce_paymill_settings, 'public');
   $options = array('type' => 'external', 'scope' => 'footer');
   drupal_add_js(PAYMILL_BRIDGE, $options);
-  drupal_add_js("var PAYMILL_PUBLIC_KEY = '$key';", 'inline');
+  $inline = "var PAYMILL_PUBLIC_KEY = '$key';\n";
+  $inline .= sprintf("var PAYMILL_3DS_BUTTON_LABEL = '%s';", t('Cancel'));
+  drupal_add_js($inline, 'inline');
   drupal_add_js(drupal_get_path('module', 'commerce_paymill') . '/commerce_paymill.js');
   return $element;
 }
