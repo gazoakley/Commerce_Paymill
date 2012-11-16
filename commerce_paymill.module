@@ -168,11 +168,8 @@ function commerce_paymill_submit_form($payment_method, $pane_values, $checkout_p
   $default = array();
   $form = commerce_payment_credit_card_form($fields, $default);
 
-  /**
-   * Render default form - will be inserted again using markup. (This is
-   * rendered now to avoid including the name attribute for input fields, which
-   * would in turn allow credit card details to be sent back)
-   */
+  // Render default form - will be inserted again using markup.
+  // THIS IS A SECURITY MEASURE TO PREVENT CARD DETAILS BEING TRANSMITTED BACK!
   $markup = drupal_render($form['credit_card']);
 
   // Create new form with no existing fields.
