@@ -119,8 +119,31 @@ function commerce_paymill_menu() {
  * Redirect user to configuration page.
  */
 function commerce_paymill_configure() {
+  $error = FALSE;
+
+  // Check Payment UI is enabled
+  if (!module_exists('commerce_payment_ui')) {
+    $message = t('The Payment UI module is disabled - please enable it before configuring Commerce Paymill');
+    drupal_set_message($message, 'warning');
+	$error = TRUE;
+  }
+
+  // Load default payment rule configuration
+  $rule = rules_config_load('commerce_payment_commerce_paymill');
+  print_r($rule);
+  if (!isset($rule)) {
+    $message = t('The default payment rule configuration cannot be found');
+	drupal_set_message($message, 'warning');
+	$error = TRUE;
+  }
+
   // Redirect user to configuration page.
-  drupal_goto('admin/commerce/config/payment-methods/manage/commerce_payment_commerce_paymill/edit/3');
+  if ($error) {
+    drupal_goto('admin/modules');
+  }
+  else {
+    drupal_goto('admin/commerce/config/payment-methods/manage/commerce_payment_commerce_paymill/edit/3');
+  }
 }
 
 /**
