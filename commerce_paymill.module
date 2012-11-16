@@ -130,11 +130,14 @@ function commerce_paymill_configure() {
 
   // Load default payment rule configuration
   $rule = rules_config_load('commerce_payment_commerce_paymill');
-  print_r($rule);
   if (!isset($rule)) {
     $message = t('The default payment rule configuration cannot be found');
 	drupal_set_message($message, 'warning');
 	$error = TRUE;
+  }
+  else {
+    // Lookup elementId for Paymill
+	$action = $rule->actions()->current();
   }
 
   // Redirect user to configuration page.
@@ -142,7 +145,12 @@ function commerce_paymill_configure() {
     drupal_goto('admin/modules');
   }
   else {
-    drupal_goto('admin/commerce/config/payment-methods/manage/commerce_payment_commerce_paymill/edit/3');
+    $goto = sprintf(
+	  'admin/commerce/config/payment-methods/manage/%s/edit/%d',
+	  $rule->name,
+	  $action->elementId()
+	);
+    drupal_goto($goto);
   }
 }
 
