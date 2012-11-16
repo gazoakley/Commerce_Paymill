@@ -4,11 +4,11 @@ jQuery(document).ready(function() {
   // Ensure changes to selected payment method bind/unbind
   jQuery('input[name="commerce_payment[payment_method]"]').change(function() {
     var selected = jQuery('input[name="commerce_payment[payment_method]"]:checked').val();
-	if (selected == 'commerce_paymill|commerce_payment_commerce_paymill') {
+    if (selected == 'commerce_paymill|commerce_payment_commerce_paymill') {
       jQuery('#edit-continue').bind('click', paymillSubmit);
-	} else {
+    } else {
       jQuery('#edit-continue').unbind('click', paymillSubmit);
-	}
+    }
   });
 });
 
