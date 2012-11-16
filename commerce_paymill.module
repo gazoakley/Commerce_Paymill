@@ -137,6 +137,11 @@ function commerce_paymill_configure() {
   }
   else {
     $action = $rule->actions()->current();
+    if (empty($action)) {
+      $message = t('No actions exist for the default payment rule configuration');
+      drupal_set_message($message, 'warning');
+      $error = TRUE;
+    }
   }
 
   // Redirect user to configuration page.
