@@ -119,13 +119,12 @@ function commerce_paymill_menu() {
  * Redirect user to configuration page.
  */
 function commerce_paymill_configure() {
-  $error = FALSE;
-
   // Check Payment UI is enabled.
   if (!module_exists('commerce_payment_ui')) {
     $message = t('The Payment UI module is disabled - please enable it before configuring Commerce Paymill');
     drupal_set_message($message, 'warning');
-    $error = TRUE;
+    drupal_goto('admin/modules');
+    return;
   }
 
   // Load default payment rule configuration.
@@ -133,29 +132,30 @@ function commerce_paymill_configure() {
   if (empty($rule)) {
     $message = t('The default payment rule configuration cannot be found');
     drupal_set_message($message, 'warning');
-    $error = TRUE;
+    drupal_goto('admin/commerce/config/payment-methods');
+    return;
   }
-  else {
-    $action = $rule->actions()->current();
-    if (empty($action)) {
-      $message = t('No actions exist for the default payment rule configuration');
-      drupal_set_message($message, 'warning');
-      $error = TRUE;
-    }
+  
+  // Check first action for default payment rule configuration
+  $action = $rule->actions()->current();
+  if (empty($action)) {
+    $message = t('No actions exist for the default payment rule configuration');
+    drupal_set_message($message, 'warning');
+    $goto = sprintf(
+      'admin/commerce/config/payment-methods/manage/%d',
+      $rule->id
+    );
+    drupal_goto($goto);
+    return;
   }
 
   // Redirect user to configuration page.
-  if ($error) {
-    drupal_goto('admin/modules');
-  }
-  else {
-    $goto = sprintf(
-      'admin/commerce/config/payment-methods/manage/%s/edit/%d',
-      $rule->name,
-      $action->elementId()
-    );
-    drupal_goto($goto);
-  }
+  $goto = sprintf(
+    'admin/commerce/config/payment-methods/manage/%s/edit/%d',
+    $rule->name,
+    $action->elementId()
+  );
+  drupal_goto($goto);
 }
 
 /**
