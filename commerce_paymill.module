@@ -130,14 +130,13 @@ function commerce_paymill_configure() {
 
   // Load default payment rule configuration
   $rule = rules_config_load('commerce_payment_commerce_paymill');
-  if (!isset($rule)) {
+  if (empty($rule)) {
     $message = t('The default payment rule configuration cannot be found');
 	drupal_set_message($message, 'warning');
 	$error = TRUE;
   }
   else {
-    // Lookup elementId for Paymill
-	$action = $rule->actions()->current();
+    $action = $rule->actions()->current();
   }
 
   // Redirect user to configuration page.
