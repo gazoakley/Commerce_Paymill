@@ -5,10 +5,10 @@
  * Provides a basic payment module implementation for Paymill
  */
 
-define('PAYMILL_BRIDGE', 'https://bridge.paymill.com/');
-define('PAYMILL_SERVER', 'https://api.paymill.de/v2/');
-define('PAYMILL_MODE_TEST', 'test');
-define('PAYMILL_MODE_LIVE', 'live');
+define('COMMERCE_PAYMILL_BRIDGE', 'https://bridge.paymill.com/');
+define('COMMERCE_PAYMILL_SERVER', 'https://api.paymill.de/v2/');
+define('COMMERCE_PAYMILL_MODE_TEST', 'test');
+define('COMMERCE_PAYMILL_MODE_LIVE', 'live');
 
 /**
  * Implements hook_commerce_payment_method_info().
@@ -40,57 +40,57 @@ function commerce_paymill_settings_form($settings = NULL) {
       'private_key' => '',
       'public_key' => '',
     ),
-    'mode' => PAYMILL_MODE_TEST,
+    'mode' => COMMERCE_PAYMILL_MODE_TEST,
   );
 
-  $form[PAYMILL_MODE_TEST] = array(
+  $form[COMMERCE_PAYMILL_MODE_TEST] = array(
     '#type' => 'fieldset',
     '#title' => t('Test keys'),
     '#collapsed' => FALSE,
   );
-  $form[PAYMILL_MODE_TEST]['private_key'] = array(
+  $form[COMMERCE_PAYMILL_MODE_TEST]['private_key'] = array(
     '#type' => 'textfield',
     '#title' => t('Private test key'),
     '#size' => 40,
     '#maxlength' => 32,
-    '#default_value' => $settings[PAYMILL_MODE_TEST]['private_key'],
+    '#default_value' => $settings[COMMERCE_PAYMILL_MODE_TEST]['private_key'],
     '#required' => TRUE,
   );
-  $form[PAYMILL_MODE_TEST]['public_key'] = array(
+  $form[COMMERCE_PAYMILL_MODE_TEST]['public_key'] = array(
     '#type' => 'textfield',
     '#title' => t('Public test key'),
     '#size' => 40,
     '#maxlength' => 32,
-    '#default_value' => $settings[PAYMILL_MODE_TEST]['public_key'],
+    '#default_value' => $settings[COMMERCE_PAYMILL_MODE_TEST]['public_key'],
     '#required' => TRUE,
   );
 
-  $form[PAYMILL_MODE_LIVE] = array(
+  $form[COMMERCE_PAYMILL_MODE_LIVE] = array(
     '#type' => 'fieldset',
     '#title' => t('Live keys'),
     '#collapsed' => FALSE,
   );
-  $form[PAYMILL_MODE_LIVE]['private_key'] = array(
+  $form[COMMERCE_PAYMILL_MODE_LIVE]['private_key'] = array(
     '#type' => 'textfield',
     '#title' => t('Private live key'),
     '#size' => 40,
     '#maxlength' => 32,
-    '#default_value' => $settings[PAYMILL_MODE_LIVE]['private_key'],
+    '#default_value' => $settings[COMMERCE_PAYMILL_MODE_LIVE]['private_key'],
   );
-  $form[PAYMILL_MODE_LIVE]['public_key'] = array(
+  $form[COMMERCE_PAYMILL_MODE_LIVE]['public_key'] = array(
     '#type' => 'textfield',
     '#title' => t('Public test key'),
     '#size' => 40,
     '#maxlength' => 32,
-    '#default_value' => $settings[PAYMILL_MODE_LIVE]['public_key'],
+    '#default_value' => $settings[COMMERCE_PAYMILL_MODE_LIVE]['public_key'],
   );
 
   $form['mode'] = array(
     '#type' => 'radios',
     '#title' => t('Transaction mode'),
     '#options' => array(
-      PAYMILL_MODE_TEST => t('Test'),
-      PAYMILL_MODE_LIVE => t('Live'),
+      COMMERCE_PAYMILL_MODE_TEST => t('Test'),
+      COMMERCE_PAYMILL_MODE_LIVE => t('Live'),
     ),
     '#default_value' => $settings['mode'],
   );
@@ -209,6 +209,7 @@ function commerce_paymill_submit_form($payment_method, $pane_values, $checkout_p
   );
 
   // Load Paymill bridge.
+  // TODO: Use #attached instead.
   $form['credit_card']['#after_build'] = array('commerce_paymill_loadjs');
   return $form;
 }
@@ -258,12 +259,12 @@ function commerce_paymill_submit_form_validate($payment_method, $pane_form, $pan
     'description' => 'Test Transaction',
   );
   $api_key = commerce_paymill_get_key($payment_method['settings']);
-  $transaction_service = new Services_Paymill_Transactions($api_key, PAYMILL_SERVER);
+  $transaction_service = new Services_Paymill_Transactions($api_key, COMMERCE_PAYMILL_SERVER);
   $transaction = $transaction_service->create($params);
 
   // Need error checking for the transaction here!.
   if (isset($transaction['Error'])) {
-    form_set_error('', $transaction['Error']);
+    form_set_error('', check_plain($transaction['Error']));
     return FALSE;
   }
 }
