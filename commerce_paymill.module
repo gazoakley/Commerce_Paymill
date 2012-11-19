@@ -225,8 +225,10 @@ function commerce_paymill_loadjs($element) {
   drupal_add_js(PAYMILL_BRIDGE, $options);
 
   // Configure Paymill.
-  $inline = sprintf("var PAYMILL_PUBLIC_KEY = '%s';\nvar PAYMILL_3DS_BUTTON_LABEL = '%s';", $key, t('Cancel'));
-  drupal_add_js($inline, 'inline');
+  $settings = array(
+	'publicKey' => $key,
+  );
+  drupal_add_js(array('commercePaymill' => $settings), 'setting');
 
   // Load Commerce Paymill JS library.
   drupal_add_js(drupal_get_path('module', 'commerce_paymill') . '/commerce_paymill.js');
