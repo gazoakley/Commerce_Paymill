@@ -67,42 +67,55 @@
       case 'internal_server_error':
         return Drupal.t('Communication with Paymill failed');
         break;
+
       case 'invalid_public_key':
         return Drupal.t('Invalid public key');
         break;
+
       case 'unknown_error':
         return Drupal.t('Unknown error');
         break;
+
       case '3ds_cancelled':
         return Drupal.t('User cancelled 3D security password entry');
         break;
+
       case 'field_invalid_card_number':
         return Drupal.t('Missing or invalid credit card number');
         break;
+
       case 'field_invalid_card_exp_year':
         return Drupal.t('Missing or invalid expiry year');
         break;
+
       case 'field_invalid_card_exp_month':
         return Drupal.t('Missing or invalid expiry month');
         break;
+
       case 'field_invalid_card_exp':
         return Drupal.t('Card has expired');
         break;
+
       case 'field_invalid_card_cvc':
         return Drupal.t('Missing or invalid checking number');
         break;
+
       case 'field_invalid_card_holder':
         return Drupal.t('Missing or invalid cardholder name');
         break;
+
       case 'field_invalid_account_number':
         return Drupal.t('Missing or invalid bank account number');
         break;
+
       case 'field_invalid_account_holder':
         return Drupal.t('Missing or invalid bank account holder');
         break;
+
       case 'field_invalid_bank_code':
         return Drupal.t('Missing or invalid zip code');
         break;
+
       default:
         return Drupal.checkPlain(error.replace('_', ' '));
     }
