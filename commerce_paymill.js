@@ -61,7 +61,7 @@
       $('#commerce-checkout-form-review').get(0).submit();
     }
   }
-  
+
   function paymillGetError(error) {
     switch (error) {
       case 'internal_server_error':
