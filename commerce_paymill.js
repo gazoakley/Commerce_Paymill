@@ -65,34 +65,34 @@
   function paymillGetError(error) {
     switch (error) {
       case 'internal_server_error':
-        return Drupal.t('Communication with PSP failed');
+        return Drupal.t('Communication with Paymill failed');
         break;
       case 'invalid_public_key':
-        return Drupal.t('Invalid Public Key');
+        return Drupal.t('Invalid public key');
         break;
       case 'unknown_error':
-        return Drupal.t('Unknown Error');
+        return Drupal.t('Unknown error');
         break;
       case '3ds_cancelled':
-        return Drupal.t('Password Entry of 3-D Secure password was cancelled by the user');
+        return Drupal.t('User cancelled 3D security password entry');
         break;
       case 'field_invalid_card_number':
-        return Drupal.t('Missing or invalid creditcard number');
+        return Drupal.t('Missing or invalid credit card number');
         break;
       case 'field_invalid_card_exp_year':
-        return Drupal.t('Missing or invalid Expiry Year');
+        return Drupal.t('Missing or invalid expiry year');
         break;
       case 'field_invalid_card_exp_month':
-        return Drupal.t('Missing or invalid Expiry Month');
+        return Drupal.t('Missing or invalid expiry month');
         break;
       case 'field_invalid_card_exp':
-        return Drupal.t('Card is no longer valid or not anymore');
+        return Drupal.t('Card has expired');
         break;
       case 'field_invalid_card_cvc':
-        return Drupal.t('Invalid Checking Number');
+        return Drupal.t('Missing or invalid checking number');
         break;
       case 'field_invalid_card_holder':
-        return Drupal.t('Invalid Cardholder');
+        return Drupal.t('Missing or invalid cardholder name');
         break;
       case 'field_invalid_account_number':
         return Drupal.t('Missing or invalid bank account number');
