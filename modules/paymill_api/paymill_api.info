@@ -1,5 +1,0 @@
-name = Paymill API
-description = Provides a Libraries module based loader for the Paymill API
-package = Libraries
-dependencies[] = libraries
-core = 7.x
