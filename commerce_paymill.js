@@ -1,3 +1,8 @@
+/**
+ * @file
+ * Generates Paymill tokens and handles client side errors.
+ */
+
 (function($) {
 
   Drupal.behaviours.commercePaymill = {
