@@ -162,9 +162,6 @@ function commerce_paymill_configure() {
  * Payment method callback: submit form.
  */
 function commerce_paymill_submit_form($payment_method, $pane_values, $checkout_pane, $order) {
-  global $_commerce_paymill_settings;
-  $_commerce_paymill_settings = $payment_method['settings'];
-
   module_load_include('inc', 'commerce_payment', 'includes/commerce_payment.credit_card');
   $fields = array(
     'owner' => array(),
@@ -209,31 +206,12 @@ function commerce_paymill_submit_form($payment_method, $pane_values, $checkout_p
   );
 
   // Load Paymill bridge.
-  // TODO: Use #attached instead.
-  $form['credit_card']['#after_build'] = array('commerce_paymill_loadjs');
+  $key = commerce_paymill_get_key($payment_method['settings'], 'public');
+  $settings = array('publicKey' => $key);
+  $form['credit_card']['#attached']['js'][] = COMMERCE_PAYMILL_BRIDGE;
+  $form['credit_card']['#attached']['js'][] = array('data' => array('commercePaymill' => $settings), 'type' => 'setting');
+  $form['credit_card']['#attached']['js'][] = drupal_get_path('module', 'commerce_paymill') . '/commerce_paymill.js';
   return $form;
-}
-
-/**
- * Load in javascript for payment form.
- */
-function commerce_paymill_loadjs($element) {
-  global $_commerce_paymill_settings;
-
-  // Load Paymill bridge.
-  $key = commerce_paymill_get_key($_commerce_paymill_settings, 'public');
-  $options = array('type' => 'external', 'scope' => 'footer');
-  drupal_add_js(PAYMILL_BRIDGE, $options);
-
-  // Configure Paymill.
-  $settings = array(
-	'publicKey' => $key,
-  );
-  drupal_add_js(array('commercePaymill' => $settings), 'setting');
-
-  // Load Commerce Paymill JS library.
-  drupal_add_js(drupal_get_path('module', 'commerce_paymill') . '/commerce_paymill.js');
-  return $element;
 }
 
 /**
