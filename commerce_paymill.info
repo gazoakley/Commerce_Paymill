@@ -3,5 +3,6 @@ description = Provides an interface for making payments via Paymill
 package = Commerce (Payment)
 dependencies[] = commerce
 dependencies[] = commerce_payment
+dependencies[] = libraries
 core = 7.x
 configure = admin/settings/commerce-paymill
