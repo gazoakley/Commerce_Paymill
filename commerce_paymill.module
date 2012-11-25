@@ -266,7 +266,7 @@ function commerce_paymill_submit_form_submit($payment_method, $pane_form, $pane_
 }
 
 /**
- * Creates an example payment transaction for the specified charge amount.
+ * Creates a payment transaction for the specified charge amount.
  *
  * @param payment_method $payment_method
  *   The payment method instance object used to charge this payment.
@@ -274,6 +274,8 @@ function commerce_paymill_submit_form_submit($payment_method, $pane_form, $pane_
  *   The order object the payment applies to.
  * @param charge $charge
  *   An array indicating the amount and currency code to charge.
+ * @return transation
+ *   A transaction representing the created payment
  */
 function commerce_paymill_transaction($payment_method, $order, $charge) {
   $transaction = commerce_payment_transaction_new('commerce_paymill', $order->order_id);
@@ -281,8 +283,6 @@ function commerce_paymill_transaction($payment_method, $order, $charge) {
   $transaction->amount = $charge['amount'];
   $transaction->currency_code = $charge['currency_code'];
   $transaction->status = COMMERCE_PAYMENT_STATUS_SUCCESS;
-  $transaction->message = 'Name: @name';
-  $transaction->message_variables = array('@name' => 'Kickstart example payment');
 
   commerce_payment_transaction_save($transaction);
   return $transaction;
