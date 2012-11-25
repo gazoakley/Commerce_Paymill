@@ -9,6 +9,8 @@ define('COMMERCE_PAYMILL_BRIDGE', 'https://bridge.paymill.com/');
 define('COMMERCE_PAYMILL_SERVER', 'https://api.paymill.de/v2/');
 define('COMMERCE_PAYMILL_MODE_TEST', 'test');
 define('COMMERCE_PAYMILL_MODE_LIVE', 'live');
+define('COMMERCE_PAYMILL_CAPTURE_MODE_FULL', 'full');
+define('COMMERCE_PAYMILL_CAPTURE_MODE_PREAUTH', 'preauth');
 
 /**
  * Implements hook_commerce_payment_method_info().
@@ -41,6 +43,7 @@ function commerce_paymill_settings_form($settings = NULL) {
       'public_key' => '',
     ),
     'mode' => COMMERCE_PAYMILL_MODE_TEST,
+    'capture_mode' => COMMERCE_PAYMILL_CAPTURE_MODE_FULL,
   );
 
   $form[COMMERCE_PAYMILL_MODE_TEST] = array(
@@ -93,6 +96,16 @@ function commerce_paymill_settings_form($settings = NULL) {
       COMMERCE_PAYMILL_MODE_LIVE => t('Live'),
     ),
     '#default_value' => $settings['mode'],
+  );
+  
+  $form['capture_mode'] = array(
+    '#type' => 'radios',
+    '#title' => t('Capture mode'),
+    '#options' => array(
+      COMMERCE_PAYMILL_CAPTURE_MODE_FULL => t('Capture'),
+      COMMERCE_PAYMILL_CAPTURE_MODE_PREAUTH => t('Pre-authorize only'),
+    ),
+    '#default_value' => $settings['capture_mode'],
   );
 
   return $form;
@@ -229,22 +242,85 @@ function commerce_paymill_submit_form_validate($payment_method, $pane_form, $pan
   // Get order total for order.
   $commerce_order_total = field_get_items('commerce_order', $order, 'commerce_order_total');
 
-  // Attempt transaction with Paymill.
-  $params = array(
+  // Get current API key
+  $api_key = commerce_paymill_get_key($payment_method['settings']);
+
+  // Instantiate services
+  $client_service = new Services_Paymill_Clients($api_key, COMMERCE_PAYMILL_SERVER);
+  $payment_service = new Services_Paymill_Payments($api_key, COMMERCE_PAYMILL_SERVER);
+  $preauthorization_service = new Services_Paymill_Preauthorizations($api_key, COMMERCE_PAYMILL_SERVER);
+  $transaction_service = new Services_Paymill_Transactions($api_key, COMMERCE_PAYMILL_SERVER);
+  
+  $client_id = commerce_paymill_get_client($order, $payment_method['settings']);
+  if (!$client_id) return FALSE;
+
+  // Create payment card
+  $payment_params = array(
+    'token' => $pane_values['credit_card']['token'],
+    'client' => $client_id
+  );
+  $payment = $payment_service->create($payment_params);
+  if (isset($payment['Error'])) {
+    form_set_error('', check_plain($payment['Error']));
+    return FALSE;
+  }
+
+  // Create transaction/preauth
+  $transaction_params = array(
     'amount' => $commerce_order_total[0]['amount'],
     'currency' => $commerce_order_total[0]['currency_code'],
-    'token' => $pane_values['credit_card']['token'],
-    'description' => 'Test Transaction',
+    'payment' => $payment['id'],
   );
-  $api_key = commerce_paymill_get_key($payment_method['settings']);
-  $transaction_service = new Services_Paymill_Transactions($api_key, COMMERCE_PAYMILL_SERVER);
-  $transaction = $transaction_service->create($params);
+  if ($payment_method['settings']['capture_mode'] == COMMERCE_PAYMILL_CAPTURE_MODE_PREAUTH)
+  {
+    $transaction = $preauthorization_service->create($transaction_params);
+  }
+  else
+  {
+    $transaction_params['description'] = 'Order:' . $order->order_id;
+    $transaction = $transaction_service->create($transaction_params);
+  }
 
   // Need error checking for the transaction here!.
   if (isset($transaction['Error'])) {
     form_set_error('', check_plain($transaction['Error']));
     return FALSE;
   }
+}
+
+function commerce_paymill_get_client($order, $settings) {
+  global $user;
+
+  // Does the current user already have a client instance?
+  if (isset($user->data)) {
+    if (isset($user->data['commerce_paymill_client_id'])) {
+      return $user->data['commerce_paymill_client_id'];
+	}
+  }
+
+  // Instantiate client service.
+  $api_key = commerce_paymill_get_key($settings);
+  $client_service = new Services_Paymill_Clients($api_key, COMMERCE_PAYMILL_SERVER);
+
+  // Create client.
+  $client_params = array(
+    'email' => $order->mail,
+    'description' => 'User:' . $order->uid,
+  );  
+  $client = $client_service->create($client_params);
+  if (isset($client['Error'])) {
+    form_set_error('', check_plain($client['Error']));
+    return FALSE;
+  }
+
+  // Update current user with client ID.
+  if ($user->uid > 0) {
+    $user->data['commerce_paymill_client_id'] = $client['data']['id'];
+    $edit = array('data' => $user->data);
+    user_save($user, $edit);
+  }
+
+  return $client['id'];
 }
 
 /**
@@ -311,6 +387,7 @@ function commerce_paymill_libraries_info() {
         'Exception.php',
         'Offers.php',
         'Payments.php',
+        'Preauthorizations.php',
         'Refunds.php',
         'Subscriptions.php',
         'Transactions.php',
