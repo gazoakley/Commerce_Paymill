@@ -274,7 +274,8 @@ function commerce_paymill_submit_form_submit($payment_method, $pane_form, $pane_
  *   The order object the payment applies to.
  * @param charge $charge
  *   An array indicating the amount and currency code to charge.
- * @return transation
+ *
+ * @return transaction
  *   A transaction representing the created payment
  */
 function commerce_paymill_transaction($payment_method, $order, $charge) {
