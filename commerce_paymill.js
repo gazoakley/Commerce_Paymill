@@ -57,12 +57,10 @@
   }
   
   function formSetError(errorText) {
-    var errorElement = $('#edit-commerce-payment-error');
-    if (! errorElement.length) {
-      $('#edit-commerce-payment > .fieldset-wrapper').prepend('<div id="edit-commerce-payment-error" class="messages error"></div>');
+    if (! $('#edit-commerce-payment-error').length) {
+      $('#edit-commerce-payment > .fieldset-wrapper').prepend('<div id="edit-commerce-payment-error" class="messages error"></div><br />');
     }
-    errorElement.html(errorText);
-    errorElement.get(0).scrollIntoView();
+    $('#edit-commerce-payment-error').html(errorText);
   }
 
   function paymillGetError(error) {
