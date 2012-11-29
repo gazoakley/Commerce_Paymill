@@ -232,7 +232,7 @@ function commerce_paymill_submit_form($payment_method, $pane_values, $checkout_p
  */
 function commerce_paymill_submit_form_validate($payment_method, $pane_form, $pane_values, $order, $form_parents = array()) {
   if (empty($pane_values['credit_card']['token'])) {
-    form_set_error('', t('No Paymill token receieved. Your card has not been charged. Please enabled JavaScript to complete your payment.'));
+    drupal_message(t('No Paymill token receieved. Your card has not been charged. Please enable JavaScript to complete your payment.'), 'error');
     return FALSE;
   }
 
@@ -261,7 +261,7 @@ function commerce_paymill_submit_form_validate($payment_method, $pane_form, $pan
   );
   $payment = $payment_service->create($payment_params);
   if (isset($payment['Error'])) {
-    form_set_error('', check_plain($payment['Error']));
+	drupal_set_error(check_plain($payment['Error']), 'error');
     return FALSE;
   }
 
@@ -283,8 +283,8 @@ function commerce_paymill_submit_form_validate($payment_method, $pane_form, $pan
 
   // Need error checking for the transaction here!.
   if (isset($transaction['Error'])) {
-    form_set_error('', check_plain($transaction['Error']));
     return FALSE;
+    drupal_set_error(check_plain($transaction['Error']), 'error');
   }
 }
 
@@ -309,7 +309,7 @@ function commerce_paymill_get_client($order, $settings) {
   );  
   $client = $client_service->create($client_params);
   if (isset($client['Error'])) {
-    form_set_error('', check_plain($client['Error']));
+	drupal_set_error(check_plain($client['Error']), 'error');
     return FALSE;
   }
 

@@ -7,25 +7,17 @@
 
   Drupal.behaviors.commercePaymill = {
     attach: function(context, settings) {
-      // Configure Paymill bridge
       window.PAYMILL_PUBLIC_KEY = settings.commercePaymill.publicKey;
-      // First load - bind the submit button
       $('#edit-continue').bind('click', paymillSubmit);
-      // Ensure changes to selected payment method bind/unbind
-      $('input[name="commerce_payment[payment_method]"]').change(function() {
-        var selected = $('input[name="commerce_payment[payment_method]"]:checked').val();
-        if (selected == 'commerce_paymill|commerce_payment_commerce_paymill') {
-          $('#edit-continue').bind('click', paymillSubmit);
-        } else {
-          $('#edit-continue').unbind('click', paymillSubmit);
-        }
-      });
     }
   };
 
   function paymillSubmit() {
+    var selected = $('input[name="commerce_payment[payment_method]"]:checked').val();
+    if (selected != 'commerce_paymill|commerce_payment_commerce_paymill') return;
     event.preventDefault();
     paymillGetToken();
+    return false;
   }
 
   function paymillGetToken() {
@@ -55,11 +47,22 @@
         return;
       }
       var errorText = paymillGetError(error.apierror);
-      alert('Error: ' + errorText);
+      formSetError(errorText);
+      $('.form-submit').removeAttr("disabled");
+      $('.checkout-processing').hide();
     } else {
       $('input[name="commerce_payment[payment_details][credit_card][token]"]').val(result.token);
       $('#commerce-checkout-form-review').get(0).submit();
     }
+  }
+  
+  function formSetError(errorText) {
+    var errorElement = $('#edit-commerce-payment-error');
+    if (! errorElement.length) {
+      $('#edit-commerce-payment > .fieldset-wrapper').prepend('<div id="edit-commerce-payment-error" class="messages error"></div>');
+    }
+    errorElement.html(errorText);
+    errorElement.get(0).scrollIntoView();
   }
 
   function paymillGetError(error) {
